@@ -31,7 +31,6 @@ module.exports.login = async (req, res) => {
                 userType: user.userType
             }
             const accessToken = await generateAccessToken(data);
-            console.log("accessToken", accessToken)
             // // const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
             // // user.refreshToken.push(refreshToken);
             // await user.save();

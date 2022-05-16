@@ -35,7 +35,16 @@ const schema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    isComplete: {type: Boolean, default: false}
+    userId: {
+        type: String,
+        required: true,
+    },
+    image: {
+        type: String,
+    },
+    isComplete: { type: Boolean, default: false },
+    isDelete: { type: Boolean, default: false },
+    addToWork: { type: Boolean, default: false }
 
 }, schemaOption);
 

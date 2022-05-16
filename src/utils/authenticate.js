@@ -14,5 +14,6 @@ module.exports.authenticate = async (req, res, next) => {
 
 }
 module.exports.generateAccessToken = (data) => {
-    return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h' });
+    // return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h' });
+    return jwt.sign(data, process.env.ACCESS_TOKEN_SECRET);
 }
