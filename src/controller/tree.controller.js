@@ -36,7 +36,7 @@ module.exports.getTrees = async (req, res) => {
             .limit(parseInt(perPage))
             .skip(parseInt(skip * parseInt(perPage)));;
         let pagination = await Pagination(count, perPage, skip)
-        return res.status(200).json({ pagination, trees, })
+        return res.status(200).json({ data: { pagination, trees } })
     }
     catch (err) {
         res.status(500).send(err.message)
@@ -47,8 +47,8 @@ module.exports.getOneTree = async (req, res) => {
     try {
         const { id } = req.params
         let tree = await Tree.findOne({ id });
-        if (!tree) return res.status(404).send({ msg: `No Tree Found by this id: ${id}` })
-        return res.status(200).json({ tree })
+        if (!tree) return res.status(404).send({ data: `No Tree Found by this id: ${id}` })
+        return res.status(200).json({ data: tree })
     }
     catch (err) {
         res.status(500).send(err.message)
@@ -59,8 +59,8 @@ module.exports.updateTree = async (req, res) => {
         const { id } = req.params;
         const { body } = req;
         let tree = await Tree.findOneAndUpdate({ id }, body, { returnOriginal: false });
-        if (!tree) return res.status(404).send({ msg: `No Tree Found by this id: ${id}` })
-        return res.status(200).json({ msg: "Tree Updated Successfully" })
+        if (!tree) return res.status(404).send({ data: `No Tree Found by this id: ${id}` })
+        return res.status(200).json({ data: "Tree Updated Successfully" })
     }
     catch (err) {
         res.status(500).send(err.message)
@@ -70,16 +70,13 @@ module.exports.deleteTree = async (req, res) => {
     try {
         const { id } = req.params
         let tree = await Tree.findOneAndUpdate({ id }, { isDelete: true }, { returnOriginal: false });
-        if (!tree) return res.status(404).send({ msg: `No Tree Found by this id: ${id}` })
-        return res.status(200).json({ msg: "Tree Deleted Successfully" })
+        if (!tree) return res.status(404).send({ data: `No Tree Found by this id: ${id}` })
+        return res.status(200).json({ data: "Tree Deleted Successfully" })
     }
     catch (err) {
         res.status(500).send(err.message)
     }
 }
-
-
-
 module.exports.treesByUser = async (req, res) => {
     try {
         const { skip, perPage } = req.query;
@@ -90,7 +87,7 @@ module.exports.treesByUser = async (req, res) => {
             .limit(parseInt(perPage))
             .skip(parseInt(skip * parseInt(perPage)));;
         let pagination = await Pagination(count, perPage, skip)
-        return res.status(200).json({ pagination, trees, })
+        return res.status(200).json({ data: { pagination, trees } })
     }
     catch (err) {
         res.status(500).send(err.message)

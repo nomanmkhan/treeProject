@@ -34,18 +34,8 @@ module.exports.login = async (req, res) => {
             // // const refreshToken = jwt.sign(data, process.env.REFRESH_TOKEN_SECRET);
             // // user.refreshToken.push(refreshToken);
             // await user.save();
-            return res.status(200).send({ token: accessToken, user: data });
+            return res.status(200).send({ data: { token: accessToken, user: data } });
         }
-    }
-    catch (err) {
-        res.status(500).send(err.stack)
-    }
-}
-
-module.exports.getUser = async (req, res) => {
-    try {
-        const user = await User.find()
-        res.status(200).json(user)
     }
     catch (err) {
         res.status(500).send(err.stack)

@@ -10,9 +10,6 @@ const { authenticate } = require("../utils/authenticate")
 router.post("/register", USER_CONTROLLER.register);
 router.post("/login", USER_CONTROLLER.login);
 
-//jwt test
-router.post("/allUsers", authenticate, USER_CONTROLLER.getUser);
-
 //Tree
 router.post("/addTree", authenticate, TREE_CONTROLLER.addTree);
 router.post("/trees", authenticate, TREE_CONTROLLER.getTrees);
