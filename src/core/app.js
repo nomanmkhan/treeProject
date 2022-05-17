@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const route = require("../routes");
 
+app.use("/image", express.static('./upload/images'))
 app.use(express.urlencoded({ extended: true, }));
 app.use(express.json());
 app.use(function (req, res, next) {

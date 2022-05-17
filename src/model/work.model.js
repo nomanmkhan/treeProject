@@ -11,11 +11,11 @@ const schema = new mongoose.Schema({
         required: true,
         index: true
     },
-    trees: [String],
+    tree: { type: String, required: true },
     userId: {
-    type: String,
-    required: true,
-},
+        type: String,
+        required: true,
+    },
     workerId: { type: String },
     isComplete: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false }

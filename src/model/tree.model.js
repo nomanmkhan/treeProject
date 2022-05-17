@@ -39,6 +39,9 @@ const schema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    plantedBy: {
+        type: String,
+    },
     image: {
         type: String,
     },
