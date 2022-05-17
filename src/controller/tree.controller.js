@@ -1,5 +1,4 @@
 const Tree = require("../model/tree.model");
-const { Pagination } = require('../utils/pagination')
 
 module.exports.addTree = async (req, res) => {
     try {
@@ -30,13 +29,8 @@ module.exports.getTrees = async (req, res) => {
             ],
             isDelete: false
         }
-        const count = await Tree.countDocuments(filter);
-        let trees = await Tree.find(filter)
-            .sort('-createdAt')
-            .limit(parseInt(perPage))
-            .skip(parseInt(skip * parseInt(perPage)));;
-        let pagination = await Pagination(count, perPage, skip)
-        return res.status(200).json({ data: { pagination, trees } })
+        let trees = await Tree.find(filter).sort('-createdAt');
+        return res.status(200).json({ data: { trees } })
     }
     catch (err) {
         res.status(500).send(err.message)
@@ -82,12 +76,8 @@ module.exports.treesByUser = async (req, res) => {
         const { skip, perPage } = req.query;
         let filter = { userId: req.user.id, isDelete: false, addToWork: false }
         const count = await Tree.countDocuments(filter);
-        let trees = await Tree.find(filter)
-            .sort('-createdAt')
-            .limit(parseInt(perPage))
-            .skip(parseInt(skip * parseInt(perPage)));;
-        let pagination = await Pagination(count, perPage, skip)
-        return res.status(200).json({ data: { pagination, trees } })
+        let trees = await Tree.find(filter).sort('-createdAt')
+        return res.status(200).json({ data: { trees } })
     }
     catch (err) {
         res.status(500).send(err.message)
