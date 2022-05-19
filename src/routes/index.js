@@ -12,7 +12,7 @@ router.post("/login", USER_CONTROLLER.login);
 
 //Tree
 router.post("/addTree", authenticate, TREE_CONTROLLER.addTree);
-router.post("/trees", authenticate, TREE_CONTROLLER.getTrees);
+router.post("/trees", TREE_CONTROLLER.getTrees);
 router.post("/treesByUser", authenticate, TREE_CONTROLLER.treesByUser);
 router.get("/tree/:id", authenticate, TREE_CONTROLLER.getOneTree);
 router.get("/deleteTree/:id", authenticate, TREE_CONTROLLER.deleteTree);

@@ -19,7 +19,7 @@ module.exports.addWork = async (req, res) => {
                 found.save()
             }
         }
-        return res.status(200).json({ data: "Work List Added Successful!", work })
+        return res.status(200).json({code:1, data: "Work List Added Successful!", work })
     }
     catch (err) {
         res.status(500).send(err.message)
