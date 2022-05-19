@@ -19,7 +19,7 @@ module.exports.addWork = async (req, res) => {
                 findTree.save()
             }
         }
-        return res.status(200).json({ data: "Work List Added Successful!" })
+        return res.status(200).json({code:1, data: "Work List Added Successful!" })
     }
     catch (err) {
         res.status(500).send(err.message)
@@ -30,8 +30,8 @@ module.exports.getWork = async (req, res) => {
     try {
         let filter = { isDelete: false, isComplete: false }
         let work = await Work.find(filter)
-        if (work.length < 1) return res.status(404).send({ data: "No Record Found" });
-        res.status(200).send({ data: work })
+        if (work.length < 1) return res.status(200).send({code:0, data: "No Record Found" });
+        res.status(200).send({code:1, data: work })
 
     }
     catch (err) {
@@ -43,8 +43,8 @@ module.exports.getWorkByUser = async (req, res) => {
     try {
         let filter = { userId: req.user.id, isDelete: false }
         let work = await Work.find(filter)
-        if (work.length < 1) return res.status(404).send({ data: "No Record Found" });
-        res.status(200).send({ data: work })
+        if (work.length < 1) return res.status(200).send({code:0, data: "No Record Found" });
+        res.status(200).send({code:1, data: work })
 
     }
     catch (err) {
@@ -56,14 +56,14 @@ module.exports.deleteWork = async (req, res) => {
     try {
         const { id } = req.params;
         let work = await Work.findOne({ id });
-        if (!work) return res.status(404).send({ data: "no record found" });
+        if (!work) return res.status(200).send({code:0, data: "no record found" });
         work.isDelete = true;
         let found = await Tree.findOne({ id: work.tree })
         if (!found) return
         found.addToWork = false;
         await work.save();
         await found.save();
-        res.status(200).send({ data: "Record Deleted" })
+        res.status(200).send({code:1, data: "Record Deleted" })
 
     }
     catch (err) {
@@ -81,7 +81,7 @@ module.exports.updateWork = async (req, res) => {
         findTree.isComplete = true;
         await work.save();
         await findTree.save();
-        res.status(200).send({ data: "Record Updated" })
+        res.status(200).send({code:1, data: "Record Updated" })
 
     }
     catch (err) {
