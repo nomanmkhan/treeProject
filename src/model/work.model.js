@@ -17,6 +17,7 @@ const schema = new mongoose.Schema({
         required: true,
     },
     workerId: { type: String },
+    image: { type: String },
     isComplete: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false }
 

@@ -42,9 +42,9 @@ const schema = new mongoose.Schema({
     plantedBy: {
         type: String,
     },
-    image: {
-        type: String,
-    },
+    // image: {
+    //     type: String,
+    // },
     isComplete: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false },
     addToWork: { type: Boolean, default: false }
