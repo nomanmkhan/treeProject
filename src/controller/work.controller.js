@@ -11,6 +11,8 @@ module.exports.addWork = async (req, res) => {
         }
         for await (let tree of body.trees) {
             let findTree = await Tree.findOne({ id: tree });
+            let work = await Work.findOne({ tree })
+            if (work) return res.status(200).send({ code: 0, data: "Tree Already Exist" })
             if (findTree) {
                 findTree.addToWork = true;
                 data.tree = findTree.id;
@@ -28,7 +30,7 @@ module.exports.addWork = async (req, res) => {
 
 module.exports.getWork = async (req, res) => {
     try {
-        let filter = { isDelete: false, isComplete:false }
+        let filter = { isDelete: false, isComplete: false }
         let work = await Work.find(filter)
         if (work.length < 1) return res.status(200).send({ code: 0, data: "No Record Found" });
         res.status(200).send({ code: 1, data: work })
@@ -81,6 +83,44 @@ module.exports.updateWork = async (req, res) => {
         findTree.isComplete = req.body.isComplete ? true : false;
         await work.save();
         await findTree.save();
+        res.status(200).send({ code: 1, data: "Record Updated" })
+
+    }
+    catch (err) {
+        res.status(500).send(err.message)
+    }
+}
+
+module.exports.getWorkbyId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        let work = await Work.findOne({ id });
+        if (!work) return res.status(200).send({ code: 0, data: "no record found" });
+        res.status(200).send({ code: 1, data: work })
+    }
+    catch (err) {
+        res.status(500).send(err.message)
+    }
+}
+
+module.exports.updateWorkbyUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { body } = req
+        let work = await Work.findOne({ id });
+        if (!work) return res.status(200).send({ code: 0, data: "no record found" });
+        let tree = await Tree.findOne({ id: work.tree });
+        if (tree) {
+            tree.addToWork = false;
+            await tree.save();
+        }
+        work.tree = body.tree;
+        let secondTree = await Tree.findOne({ id: work.tree });
+        if (secondTree) {
+            secondTree.addToWork = true;
+            await secondTree.save();
+        }
+        await work.save()
         res.status(200).send({ code: 1, data: "Record Updated" })
 
     }

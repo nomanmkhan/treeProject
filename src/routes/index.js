@@ -34,9 +34,11 @@ router.post("/updateTree/:id", authenticate, TREE_CONTROLLER.updateTree);
 //Work List
 router.post("/addWork", authenticate, WORK_CONTROLLER.addWork)
 router.get("/deleteWork/:id", authenticate, WORK_CONTROLLER.deleteWork)
+router.get("/workbyId/:id", authenticate, WORK_CONTROLLER.getWorkbyId)
 router.post("/workByUser", authenticate, WORK_CONTROLLER.getWorkByUser)
 router.post("/getWork", authenticate, WORK_CONTROLLER.getWork) //for tehnical
 router.post("/updateWork/:id", upload.single('image'), authenticate, WORK_CONTROLLER.updateWork) //for tehnical
+router.post("/updateWorkbyUser/:id", authenticate, WORK_CONTROLLER.updateWorkbyUser) //for user
 
 
 module.exports = router;
