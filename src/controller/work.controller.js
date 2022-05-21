@@ -12,7 +12,7 @@ module.exports.addWork = async (req, res) => {
         for await (let tree of body.trees) {
             let findTree = await Tree.findOne({ id: tree });
             let work = await Work.findOne({ tree })
-            if (work) return res.status(200).send({ code: 0, data: "Tree Already Exist" })
+            if (work) return res.status(200).send({ code: 0, data: `Tree Already Exist with this id: ${tree}` })
             if (findTree) {
                 findTree.addToWork = true;
                 data.tree = findTree.id;
