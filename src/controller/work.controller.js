@@ -11,7 +11,7 @@ module.exports.addWork = async (req, res) => {
         }
         for await (let tree of body.trees) {
             let findTree = await Tree.findOne({ id: tree });
-            let work = await Work.findOne({ tree })
+            let work = await Work.findOne({ tree,isDelete:false })
             if (work) return res.status(200).send({ code: 0, data: `Tree Already Exist with this id: ${tree}` })
             if (findTree) {
                 findTree.addToWork = true;
@@ -75,6 +75,7 @@ module.exports.deleteWork = async (req, res) => {
 module.exports.updateWork = async (req, res) => {
     try {
         const { id } = req.params;
+     
         let work = await Work.findOne({ id });
         work.isComplete = req.body.isComplete ? true : false;
         work.workerId = req.user.id;
