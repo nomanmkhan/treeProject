@@ -5,9 +5,6 @@ const { schemaOption } = require("../utils/schemaOptions")
 const schema = new mongoose.Schema({
     id: {
         type: String,
-        default: () => {
-            return uuidv4();
-        },
         required: true,
         index: true
     },
@@ -47,7 +44,8 @@ const schema = new mongoose.Schema({
     // },
     isComplete: { type: Boolean, default: false },
     isDelete: { type: Boolean, default: false },
-    addToWork: { type: Boolean, default: false }
+    addToWork: { type: Boolean, default: false },
+    isImage: { type: Boolean, default: false },
 
 }, schemaOption);
 

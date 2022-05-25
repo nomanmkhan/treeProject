@@ -44,7 +44,9 @@ const schema = new mongoose.Schema({
     phone: {
         type:String,
         required: true
-    }
+    },
+    isDelete: { type: Boolean, default: false },
+
 
 }, schemaOption);
 
