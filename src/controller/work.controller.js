@@ -1,26 +1,36 @@
 
 const Work = require("../model/work.model");
 const Tree = require("../model/tree.model");
+const { workIdGenerator } = require("../utils/helper")
 
 module.exports.addWork = async (req, res) => {
     try {
         const { body } = req;
         const { user } = req;
-        let data = {
-            userId: user.id,
-        }
+        let count = await Work.count()
+        const workId = await workIdGenerator(count + 1);
+        let unique = await Work.find();
         for await (let tree of body.trees) {
-            let findTree = await Tree.findOne({ id: tree });
-            let work = await Work.findOne({ tree })
-            if (work) return res.status(200).send({ code: 0, data: `Tree Already Exist with this id: ${tree}` })
-            if (findTree) {
-                findTree.addToWork = true;
-                data.tree = findTree.id;
-                let work = await Work(data);
-                work.save();
-                findTree.save()
+            for (let i = 0; i < unique.length; i++) {
+                if (unique[i].trees.includes(tree)) {
+                    if(unique[i].isDelete === false){
+                        return res.status(200).send({ code: 0, data: `Tree: ${tree} already added in work` })
+                    }
+                }
             }
         }
+        for await (let treeSave of body.trees) {
+            let singleTree = await Tree.findOne({ id: treeSave });
+            singleTree.addToWork = true;
+            await singleTree.save();
+        }
+        let data = {
+            userId: user.id,
+            id: workId,
+            trees: body.trees
+        }
+        let work = await Work(data);
+        await work.save();
         return res.status(200).json({ code: 1, data: "Work List Added Successful!" })
     }
     catch (err) {
@@ -60,11 +70,14 @@ module.exports.deleteWork = async (req, res) => {
         let work = await Work.findOne({ id });
         if (!work) return res.status(200).send({ code: 0, data: "no record found" });
         work.isDelete = true;
-        let found = await Tree.findOne({ id: work.tree })
-        if (!found) return
-        found.addToWork = false;
+        for (let i = 0; i < work.trees.length; i++) {
+            let found = await Tree.findOne({ id: work.trees[i] })
+            if (found) {
+                found.addToWork = false;
+                await found.save();
+            }
+        }
         await work.save();
-        await found.save();
         res.status(200).send({ code: 1, data: "Record Deleted" })
 
     }

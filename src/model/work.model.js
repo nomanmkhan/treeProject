@@ -1,17 +1,15 @@
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require("mongoose");
-const { schemaOption } = require("../utils/schemaOptions")
+const { schemaOption } = require("../utils/schemaOptions");
+const { type } = require('express/lib/response');
 
 const schema = new mongoose.Schema({
     id: {
         type: String,
-        default: () => {
-            return uuidv4();
-        },
         required: true,
         index: true
     },
-    tree: { type: String, required: true },
+    trees: [{ type: String }],
     userId: {
         type: String,
         required: true,
