@@ -44,9 +44,10 @@ module.exports.login = async (req, res) => {
 
 module.exports.userList = async (req, res) => {
     try {
-        let user = await User.find({ userType: { $not: { $regex: "admin" } }, isDelete: false }).sort('-createdAt');
+        let user = await User.find({ isDelete: false }).sort('-createdAt');
         if (user.length === 0) return res.status(200).send({ code: 0, data: "No user found" })
-        return res.status(200).send({ code: 1, data: user });
+        let filterUser = user.filter(f => f.id !== req.user.id);
+        return res.status(200).send({ code: 1, data: filterUser });
     }
     catch (err) {
         res.status(500).send(err.stack)
