@@ -1,4 +1,3 @@
-
 const Work = require("../model/work.model");
 const Tree = require("../model/tree.model");
 const { workIdGenerator } = require("../utils/helper")
@@ -13,7 +12,7 @@ module.exports.addWork = async (req, res) => {
         for await (let tree of body.trees) {
             for (let i = 0; i < unique.length; i++) {
                 if (unique[i].trees.includes(tree)) {
-                    if(unique[i].isDelete === false){
+                    if (unique[i].isDelete === false) {
                         return res.status(200).send({ code: 0, data: `Tree: ${tree} already added in work` })
                     }
                 }
@@ -74,6 +73,7 @@ module.exports.deleteWork = async (req, res) => {
             let found = await Tree.findOne({ id: work.trees[i] })
             if (found) {
                 found.addToWork = false;
+                found.isImage = false;
                 await found.save();
             }
         }
@@ -92,10 +92,15 @@ module.exports.updateWork = async (req, res) => {
         work.isComplete = req.body.isComplete ? true : false;
         work.workerId = req.user.id;
         if (req.file) { work.image = `http://localhost:4000/image/${req.file.filename}`; }
-        let findTree = await Tree.findOne({ id: work.tree });
-        findTree.isComplete = req.body.isComplete ? true : false;
+        for await (let tree of work.trees) {
+            let findTree = await Tree.findOne({ id: tree });
+            if (findTree) {
+                if (req.file) { findTree.isImage = true }
+                findTree.isComplete = req.body.isComplete ? true : false;
+                await findTree.save()
+            }
+        }
         await work.save();
-        await findTree.save();
         res.status(200).send({ code: 1, data: "Record Updated" })
 
     }
@@ -119,21 +124,37 @@ module.exports.getWorkbyId = async (req, res) => {
 module.exports.updateWorkbyUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { body } = req
-        let work = await Work.findOne({ id });
-        if (!work) return res.status(200).send({ code: 0, data: "no record found" });
-        let tree = await Tree.findOne({ id: work.tree });
-        if (tree) {
-            tree.addToWork = false;
-            await tree.save();
+        const { trees } = req.body;
+        let work = await Work.find();
+        for await (let tree of trees) {
+            for (let i = 0; i < work.length; i++) {
+                if (work[i].trees.includes(tree)) {
+                    if (work[i].isDelete === false && work[i].id !== id) {
+                        return res.status(200).send({ code: 0, data: `Tree: ${tree} already added in work` })
+                    }
+                }
+            }
         }
-        work.tree = body.tree;
-        let secondTree = await Tree.findOne({ id: work.tree });
-        if (secondTree) {
-            secondTree.addToWork = true;
-            await secondTree.save();
+        let updateWork = await Work.findOne({ id })
+        for (let i = 0; i < updateWork.trees.length; i++) {
+            let singleTree = await Tree.findOne({ id: updateWork.trees[i] })
+            if (singleTree) {
+                singleTree.addToWork = false;
+                singleTree.isImage = false;
+                await singleTree.save()
+            }
         }
-        await work.save()
+
+        for await (let treeSave of trees) {
+            let t = await Tree.findOne({ id: treeSave })
+            if (t) {
+                t.addToWork = true
+                await t.save()
+            }
+        }
+
+        updateWork.trees = trees;
+        await updateWork.save();
         res.status(200).send({ code: 1, data: "Record Updated" })
 
     }
@@ -141,5 +162,3 @@ module.exports.updateWorkbyUser = async (req, res) => {
         res.status(500).send(err.message)
     }
 }
-
-
