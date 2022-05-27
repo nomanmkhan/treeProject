@@ -1,5 +1,6 @@
 const Work = require("../model/work.model");
 const Tree = require("../model/tree.model");
+const User = require("../model/user.model");
 const { workIdGenerator } = require("../utils/helper")
 
 module.exports.addWork = async (req, res) => {
@@ -40,9 +41,35 @@ module.exports.addWork = async (req, res) => {
 module.exports.getWork = async (req, res) => {
     try {
         let filter = { isDelete: false, isComplete: false }
-        let work = await Work.find(filter)
-        if (work.length < 1) return res.status(200).send({ code: 0, data: "No Record Found" });
-        res.status(200).send({ code: 1, data: work })
+        // let work = await Work.find(filter)
+        let newWork = await Work.aggregate([
+            { $match: filter },
+            {
+                $lookup: {
+                    from: User.collection.name,
+                    localField: "userId",
+                    foreignField: "id",
+                    as: "userDetail"
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    id: 1,
+                    trees:1,
+                    isComplete:1,
+                    isDelete:1,
+                    image:1,
+                    workerId:1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    userId: 1,
+                    "userEmail": { $arrayElemAt: [ "$userDetail.email", 0 ] },
+                }
+            }
+        ]).sort('-createdAt');
+        if (newWork.length < 1) return res.status(200).send({ code: 0, data: "No Record Found" });
+        res.status(200).send({ code: 1, data: newWork })
 
     }
     catch (err) {

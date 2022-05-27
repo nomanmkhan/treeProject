@@ -1,4 +1,5 @@
 const Tree = require("../model/tree.model");
+const User = require("../model/user.model");
 const { treeIdGenerator } = require("../utils/helper")
 module.exports.addTree = async (req, res) => {
     try {
@@ -32,8 +33,40 @@ module.exports.getTrees = async (req, res) => {
             ],
             isDelete: false
         }
+        let newTrees = await Tree.aggregate([
+            {
+                $match: filter
+            },
+            {
+                $lookup: {
+                    from: User.collection.name,
+                    localField: "userId",
+                    foreignField: "id",
+                    as: "userDetail"
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    address: 1,
+                    id: 1,
+                    type: 1,
+                    lat: 1,
+                    long: 1,
+                    lot: 1,
+                    isComplete: 1,
+                    isDelete: 1,
+                    addToWork: 1,
+                    isImage: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    userId: 1,
+                    "userEmail": { $arrayElemAt: [ "$userDetail.email", 0 ] },
+                }
+            }
+        ]).sort('-createdAt');
         let trees = await Tree.find(filter).sort('-createdAt');
-        return res.status(200).json({ code: 1, data: { trees } })
+        return res.status(200).json({ code: 1, data: { newTrees } })
     }
     catch (err) {
         res.status(500).send(err.message)
